@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    command: |
+      sh -c "flask run --host 0.0.0.0"

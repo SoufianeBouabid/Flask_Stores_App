@@ -1,52 +1,22 @@
-from flask import Flask, request
+from flask import Flask
+from flask_smorest import Api
+#connects flask smorest extentsion to the flask app 
+
+from resources.item import blp as ItemBlueprint
+from resources.store import blp as StoreBlueprint
 
 app = Flask(__name__)
 
-stores = [
-  {
-    "name":"My Store",
-    "items":[
-      {
-        "name":"Chair",
-        "price":179.99
-        }
-    ]
-  }
-]
+#dictionary-like object in Flask used to store configuration settings for the application
+app.config["PROPAGATE_EXCEPTIONS"] = True #if there is an exception propagate to main app
+app.config["API_TITLE"] = "Stores REST API"
+app.config["API_VERSION"] = "v1"
+app.config["OPENAPI_VERSION"] = "3.0.3" #api standards
+app.config["OPENAPI_URL_PREFIX"] = "/" #standard telling flask smorest where the root of the api is
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui" # to tell smorest to us swagger for the documentaion
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-@app.get("/store")
-def get_stores():
-  return {"stores":stores}
+api = Api(app)
 
-@app.post("/store")
-def create_store():
-  request_data = request.get_json()
-  new_store={"name":request_data["name"],"items":[]}
-  stores.append(new_store)
-  return new_store, 201
-
-@app.post("/store/<string:name>/item")
-def create_items(name):
-  request_data = request.get_json()
-
-  for store in stores: 
-    if store["name"]==name:
-      new_item= {"name":request_data["name"],"price":request_data["price"]}
-      #print(request_data)
-      store["items"].append(new_item)
-      return new_item,201
-  return {"message":"Store not found"},404
-
-@app.get("/store/<string:name>")
-def get_store(name):
-  for store in stores: 
-    if store["name"]==name:
-      return store #store is a dict, flask returns the json auto
-  return {"message":"Store not found"},404
-
-@app.get("/store/<string:name>/item")
-def get_store_items(name):
-  for store in stores: 
-    if store["name"]==name:
-      return {"items":store["items"]}
-  return {"message":"Store not found"},404
+api.register_blueprint(ItemBlueprint)
+api.register_blueprint(StoreBlueprint)
