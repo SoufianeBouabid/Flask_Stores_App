@@ -1,7 +1,7 @@
-FROM python:3.11
-EXPOSE 5000
-WORKDIR /app/
+FROM python:3.10
+WORKDIR /app
 COPY ./requirements.txt requirements.txt
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
-COPY . /app/
-CMD ["tail", "-f", "/dev/null"]
+RUN apt-get update && apt-get install -y ca-certificates
+RUN pip install --no-cache-dir --upgrade -r requirements.txt --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org
+COPY . .
+CMD ["/bin/bash", "docker-entrypoint.sh"]

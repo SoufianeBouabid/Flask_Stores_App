@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+from dotenv import load_dotenv
 
 # connects flask smorest extentsion to the flask app
 
@@ -25,6 +26,7 @@ def create_app(
 ):  # cretaing this fct to call it when needed for example testing
     app = Flask(__name__)
     # dictionary-like object in Flask used to store configuration settings for the application
+    load_dotenv() #find .env file at the root of the project and run the context
     app.config[
         "PROPAGATE_EXCEPTIONS"
     ] = True  # if there is an exception propagate to main app
