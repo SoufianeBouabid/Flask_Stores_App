@@ -1,6 +1,6 @@
 import os
 from flask import Flask, jsonify
-
+from flask_cors import CORS
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
@@ -25,6 +25,7 @@ def create_app(
     db_url=None,
 ):  # cretaing this fct to call it when needed for example testing
     app = Flask(__name__)
+    CORS(app, resources={r"/register": {"origins": "*"}})
     # dictionary-like object in Flask used to store configuration settings for the application
     load_dotenv() #find .env file at the root of the project and run the context
     app.config[
