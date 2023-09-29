@@ -57,3 +57,6 @@ class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
     password = fields.Str(required=True)  # to not return password to the client
+
+class JwtSchema(Schema):
+    refresh_token=fields.Str(required=True)
