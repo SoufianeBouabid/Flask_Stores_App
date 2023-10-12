@@ -46,9 +46,8 @@ class UserRegister(MethodView):
 class TokenRefresh(MethodView):
     @blp.arguments(JwtSchema)
     def post(self, refresh_token):
-        data=decode_token(refresh_token["refresh_token"],allow_expired=True)     
+        data=decode_token(refresh_token["refresh_token"],allow_expired=False)     
         new_token=create_access_token(identity=data["sub"], fresh=True)
-        print({"access_token": new_token})
         return {"access_token": new_token}
         
 
@@ -82,7 +81,6 @@ class UserLogout(MethodView):
         return {"message": "Successfully logged out"}
     
 @blp.route("/user/<int:user_id>")
-
 class User(MethodView):
     @blp.response(200, UserSchema)
     @jwt_required()
@@ -90,11 +88,30 @@ class User(MethodView):
         user = UserModel.query.get_or_404(user_id)
         return user
 
+    @jwt_required()
     def delete(self, user_id):
         user = UserModel.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
         return {"message": "User deleted."}, 200
+
+    @jwt_required()
+    def post(self, user_id):
+        user = UserModel.query.get_or_404(user_id)
+        # Retrieve the new username and password from the request data
+        data = request.get_json()
+        new_username = data.get("username")
+        new_password = data.get("password")
+        # Update the user's username and password if provided
+        if new_username:
+            user.username = new_username
+        if new_password:
+            user.password = pbkdf2_sha256.hash(new_password)
+
+        db.session.commit()
+
+        return {"message": "User updated successfully"}, 200
+
     
 @blp.route("/user")
 class User(MethodView):
@@ -103,7 +120,7 @@ class User(MethodView):
         users = []
         user = UserModel.query.all()
         for u in user:
-            users.append({"name":u.username})
+            users.append({"name":u.username,"id":u.id})
         return jsonify(users)
     
     

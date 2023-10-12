@@ -97,7 +97,7 @@ api = Api(app)
 
 # setting refresh token :
 
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=8)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=30)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(seconds=1000)
 app.config["JWT_SECRET_KEY"] = "96649321673240285422287757096837466547"
 # secret ket dont get stored normaly in code but in env variable
